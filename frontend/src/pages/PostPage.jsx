@@ -1,4 +1,4 @@
-import React from 'react'
+import {React} from 'react'
 
 const PostPage = () => {
   return (
@@ -12,7 +12,7 @@ const PostPage = () => {
         <div className="image">
             <img src="https://pbs.twimg.com/media/EhUHpYIUwAMEGU2?format=jpg&name=small" alt="" />
         </div>
-        <p className="context">
+        <p className="content">
                 ยิงดียิงเเม่นasdfhasjdgfjasldhfglksahgkhasghuashdjglkashguashdguiasdgasidkgoasjdgasidgj
         </p>
     </div>
