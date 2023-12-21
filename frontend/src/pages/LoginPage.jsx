@@ -8,14 +8,14 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const {setUserInfo} = useContext(UserContext);
-  const login = async (e) =>{
+  const login =async (e) => {
     e.preventDefault();
     const response = await fetch(`${baseURL}/login`,{
       method:"POST",
       body: JSON.stringify({username, password}),
-      headers: { 'Content-Type': 'application/json' },
+      headers:{"Content-Type":"application/json"},
       credentials:"include",
-    });
+  });
     if(response.ok){
       response.json().then((userInfo)=>{
         setUserInfo(userInfo);
