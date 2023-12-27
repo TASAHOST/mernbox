@@ -16,6 +16,7 @@ const app = express();
 app.use(cors({credentials:true, origin:"http://localhost:5173"}));
 app.use(express.json());
 app.use(cookieParser());
+app.use("/uploads", express.static(__dirname+"/uploads"));
 
 //database Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -92,7 +93,50 @@ app.post("/post", uploadMiddleware.single("file"), async (req,res)=>{
 
 })
 
+app.get("/post", async (req, res) =>{
+    res.json(
+        await Post.find()
+        .populate("author", ["username"])
+        .sort({createdAt: -1})
+        .limit(20)
+    )
+});
+app.get("/post/:id", async (req, res)=>{
+    const {id} = req.params;
+    const postDoc = await Post.findById(id).populate("author", ["username"]);
+    res.json(postDoc);
+})
 
+
+app.put("/post" , uploadMiddleware.single("file"), async (req,res)=>{
+    let newPath = null;
+    if(req.file){
+        const {originalname, path} = req.file;
+        const parts = originalname.split(".");
+        const ext = parts[parts.length - 1]; //ตำแหน่งสุดท้าย = n-1 เสมอ
+        const newPath = path + "." + ext; 
+        fs.renameSync(path, newPath);
+    }
+    const {token} = req.cookies;
+    jwt.verify(token, secret, async (err, info)=>{
+        if(err) throw err;
+        const {id, title, summary, content} = req.body;
+        const postDoc = await Post.findById(id);
+        const isAuthor = JSON.stringify(postDoc.author._id) === JSON.stringify(info.id._id)
+        if(!isAuthor){
+            return res.status(400).json("เธอไม่ใช่เจ้าของบทความนะ")
+        }
+        postDoc.update({
+            title,
+            summary,
+            content,
+            cover: newPath? newPath:postDoc.cover,
+
+        }) 
+        res.json(postDoc);
+    })
+       
+})
 
 const PORT = process.env.PORT;
 app.listen(PORT, ()=>{

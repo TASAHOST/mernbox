@@ -1,28 +1,26 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { UseContext, useEffect } from 'react'
-import { UserContext } from '../context/UserContext'
+import {format} from "date-fns"
+const baseURL = import.meta.env.VITE_BASE_URL
 
-const Post = () => {
+const Post = ({_id, cover, title, author, createdAt, summary}) => {
   return (
     <div className='post'>
         <div className="image">
-            <Link to={"post/1"} > 
-            <img src="https://pbs.twimg.com/media/EhUHpYIUwAMEGU2?format=jpg&name=small" alt="" />
+            <Link to={`/post/${_id}`}> 
+            <img src={`${baseURL}/${cover}`} alt="" />
             </Link>
         </div>
         <div className="texts">
-            <Link>
-             <h2>
-                ปืนกล้วย
-             </h2>
+            <Link to={`/post/${_id}`}> 
+             <h2>{title}</h2>
             </Link>
             <p className='info'>
-                <a href="" className='author'>tossapon</a>
-                <time> 12 December 2023 </time>
+                <a href="" className='author'>{author.username}</a>
+                <time> {format(new Date(createdAt), 'dd MMMM yyyy HH:MM') }</time>
             </p>
             <p className="summary">
-                ยิงดียิงเเม่นasdfhasjdgfjasldhfglksahgkhasghuashdjglkashguashdguiasdgasidkgoasjdgasidgj
+                {summary}
             </p>
         </div>
     </div>
