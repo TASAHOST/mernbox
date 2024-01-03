@@ -1,7 +1,7 @@
 import {useState, useContext, useEffect} from 'react'
 import { UserContext } from '../context/UserContext';
 import {format} from "date-fns"
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 const baseURL = import.meta.env.VITE_BASE_URL
 
@@ -16,6 +16,22 @@ const PostPage = () => {
       })
     })
   }, [id]);
+
+  const handleDelete = (event) => {
+    console.log(id)
+    fetch(`${baseURL}/post/${id}`,{
+      method:"DELETE"
+    }).then((response) => {
+      if(response.ok){
+        
+        return <Navigate to={"/"}/>
+      }
+
+      console.log(response.json);
+
+    })
+}
+
   if (!postInfo) return"";
   return (
     <div className='post-page'>
@@ -32,8 +48,20 @@ const PostPage = () => {
 </svg>
 
           edit post</Link>
+
+          
+      <button
+      className="btn grey"
+       onClick={handleDelete} 
+      >
+      Delete Post
+      </button>
         </div>
+
+        
       )}
+
+
         <div className="image">
         <img src={`${baseURL}/${postInfo.cover}`} alt="" />
         </div>

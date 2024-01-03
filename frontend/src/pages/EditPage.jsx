@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import Editor from '../components/Editor'
 import { useParams , Navigate } from 'react-router-dom';
-import { base } from '../../../backend/models/User';
+
 
 
 const baseURL = import.meta.env.VITE_BASE_URL
@@ -44,7 +44,7 @@ const EditPage = () => {
         
     }
     if(redirect){
-        return <Navigate to={"/post"}/>
+        return <Navigate to={"/"}/>
     }
     return (
         <form onSubmit={updatePost} >

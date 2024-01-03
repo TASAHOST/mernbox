@@ -52,11 +52,11 @@ app.post("/login", async(req,res)=>{
     const isMatchedPassword = bcrypt.compareSync(password, userDoc.password); //เช็ค พาส ที่ได้จากฟอร์ม และในฐานข้อมูลว่าเหมือนกันไหม
     if(isMatchedPassword){
         //logged in
-        jwt.sign({username, id: userDoc}, secret, {}, (err, token)=>{
+        jwt.sign({username, id: userDoc._id}, secret, {}, (err, token)=>{
             if(err) throw err;
             //save data in cookie
             res.cookie("token", token).json({
-                id: userDoc.id,
+                id: userDoc._id,
                 username,
             });
         });
@@ -122,11 +122,11 @@ app.put("/post" , uploadMiddleware.single("file"), async (req,res)=>{
         if(err) throw err;
         const {id, title, summary, content} = req.body;
         const postDoc = await Post.findById(id);
-        const isAuthor = JSON.stringify(postDoc.author._id) === JSON.stringify(info.id._id)
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id)
         if(!isAuthor){
             return res.status(400).json("เธอไม่ใช่เจ้าของบทความนะ")
         }
-        postDoc.update({
+        await postDoc.updateOne({
             title,
             summary,
             content,
@@ -136,6 +136,21 @@ app.put("/post" , uploadMiddleware.single("file"), async (req,res)=>{
         res.json(postDoc);
     })
        
+})
+
+app.delete('/post/:id', async(req,res)=>{
+    const postId = req.params.id
+    if(!postId){
+        return res.status(404).json("no id provided")
+    }
+    if(mongoose.isValidObjectId(postId)){
+        const result = await Post.deleteOne({_id:postId})
+        if(result.deletedCount === 0 ){
+            return res.status(404).json(`no id found ${postId}`)
+        }
+        res.status(202).json(`deleted id ${postId}`)
+    }
+    res.status(404).json('id is not object id')
 })
 
 const PORT = process.env.PORT;
